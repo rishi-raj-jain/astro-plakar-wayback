@@ -1,0 +1,67 @@
+---
+export const prerender = false
+
+import Intro from '@/components/Intro.astro'
+import OpsPanel from '@/components/OpsPanel.svelte'
+import Sidebar from '@/components/Sidebar.svelte'
+import VersionActions from '@/components/VersionActions.svelte'
+import VersionSwitcher from '@/components/VersionSwitcher.svelte'
+import Shell from '@/layouts/Shell.astro'
+import { getAssetBytes, getEntries, getNav, getPage, getTheme, getVersions, renderDoc, switcherVersions } from '@/lib/docs'
+import { fmtBytes, Ops } from '@/lib/ops'
+
+const slug = (Astro.params.slug ?? '').replace(/\/$/, '')
+
+const ops = new Ops()
+const version = getVersions(ops).find((v) => v.live)!
+const entries = getEntries(version, ops)
+const page = getPage(version, slug, entries, ops)
+if (!page) return new Response('Not found', { status: 404 })
+
+const nav = getNav(entries, version)
+const theme = getTheme(version, entries, ops)
+const { html, referenced } = renderDoc(version, slug, page.body, entries)
+const manifest = referenced.map((aslug) => {
+  const bytes = getAssetBytes(version, aslug, entries, ops)
+  return { slug: aslug, bytes: bytes ? bytes.length : 0, href: `/assets/${version.key}/${aslug}` }
+})
+const versions = switcherVersions(slug, 'current')
+---
+
+<Shell title={`${page.title} · ${version.label} (current)`}>
+  <style is:inline set:html={theme}></style>
+  <div class="docs-layout">
+    <Sidebar nav={nav} activeSlug={slug} />
+
+    <main class="doc-main">
+      <VersionSwitcher versions={versions} />
+      <Intro />
+      <article class="card doc" set:html={html} />
+
+      {
+        manifest.length > 0 && (
+          <div class="card files">
+            <h3>Files on this page</h3>
+            <ul>
+              {manifest.map((m) => (
+                <li>
+                  <a href={m.href}>{m.slug}</a>
+                  <span class="muted">{fmtBytes(m.bytes)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </main>
+
+    <aside class="doc-aside">
+      <OpsPanel
+        ops={ops.entries}
+        heading={`Serving ${version.label} (current)`}
+        note="The current version is read live from src/docs. Browse an older version to watch Plakar retrieve it from the backup."
+      />
+      <VersionActions client:load />
+    </aside>
+  </div>
+</Shell>

@@ -1,0 +1,7 @@
+{
+  "endpoints": [
+    { "method": "GET", "path": "/status", "since": "1.0" },
+    { "method": "GET", "path": "/sources", "since": "4.0" },
+    { "method": "POST", "path": "/run", "since": "4.0" }
+  ]
+}

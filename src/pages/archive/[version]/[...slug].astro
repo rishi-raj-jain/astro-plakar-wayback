@@ -1,0 +1,18 @@
+---
+export const prerender = false
+
+import ArchiveStream from '@/components/ArchiveStream.svelte'
+import Shell from '@/layouts/Shell.astro'
+
+// No Plakar commands run here. The shell renders instantly. The ArchiveStream
+// island reads /api/retrieve on hydration and fills the terminal, sidebar,
+// switcher, banner, article, stylesheet and file lists as each command finishes.
+const versionKey = Astro.params.version!
+const slug = (Astro.params.slug ?? '').replace(/\/$/, '')
+const endpoint = `/api/retrieve/${versionKey}/${slug}`
+const shortId = versionKey.split('-').pop() ?? versionKey
+---
+
+<Shell title={`Retrieving ${slug} from backup`}>
+  <ArchiveStream endpoint={endpoint} slug={slug} shortId={shortId} client:load />
+</Shell>

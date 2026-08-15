@@ -1,0 +1,47 @@
+---
+import { AstroFont } from 'astro-font'
+import '../styles/global.css'
+
+const { title } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <AstroFont
+      config={[
+        {
+          src: [],
+          preload: true,
+          display: 'swap',
+          name: 'Space Grotesk',
+          fallback: 'sans-serif',
+          googleFontsURL: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap',
+        },
+        {
+          src: [],
+          preload: false,
+          display: 'swap',
+          fallback: 'monospace',
+          name: 'JetBrains Mono',
+          googleFontsURL: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap',
+        },
+      ]}
+    />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="mark">📄</span>
+        <span class="logo">Nimbus</span>
+      </a>
+      <span class="topline">Encrypted, on-demand documentation backups with Plakar + Cloudflare R2</span>
+    </header>
+    <main class="site-main">
+      <slot />
+    </main>
+  </body>
+</html>

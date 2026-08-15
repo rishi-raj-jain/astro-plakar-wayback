@@ -1,0 +1,6 @@
+key,default,description
+NIMBUS_KEY,,API key (required)
+NIMBUS_KEY_FILE,,path to a mounted secret file
+concurrency,4,number of parallel workers
+timeout,30,request timeout in seconds
+retries,3,number of retries per request

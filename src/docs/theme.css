@@ -1,0 +1,24 @@
+/* v5 theme (current): modern indigo, polished */
+.doc {
+  --accent: #4f46e5;
+  font-family: system-ui, sans-serif;
+  line-height: 1.7;
+}
+.doc h1,
+.doc h2 {
+  color: #3730a3;
+  letter-spacing: -0.01em;
+}
+.doc a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+.doc img {
+  border: 1px solid #e0e7ff;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.12);
+}
+.doc pre {
+  background: #eef2ff;
+  border-radius: 8px;
+}

@@ -1,0 +1,14 @@
+# Keep the build context small. src/docs is the starting docs baked into the
+# image, so it must stay in the context.
+node_modules
+dist
+.astro
+.plakar
+.git
+.github
+.playwright-mcp
+*.log
+npm-debug.log*
+.DS_Store
+.vscode
+fly.toml

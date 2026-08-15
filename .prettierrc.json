@@ -1,0 +1,11 @@
+{
+  "semi": false,
+  "printWidth": 180,
+  "singleQuote": true,
+  "plugins": ["prettier-plugin-astro", "prettier-plugin-svelte", "prettier-plugin-sort-imports"],
+  "sortingMethod": "alphabetical",
+  "overrides": [
+    { "files": "*.astro", "options": { "parser": "astro" } },
+    { "files": "*.svelte", "options": { "parser": "svelte" } }
+  ]
+}

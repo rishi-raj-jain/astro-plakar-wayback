@@ -1,0 +1,36 @@
+# Fly.io config. Rename `app` to something unique (or let `fly launch` set it).
+# The store + docs live on a persistent volume so backups and new versions made
+# from the UI survive restarts and redeploys.
+app = "astro-plakar-wayback"
+primary_region = "iad"
+
+[build]
+
+[env]
+  HOST = "0.0.0.0"
+  PORT = "8080"
+  DATA_DIR = "/data"
+  PLAKAR_STORE_LABEL = "@nimbus-docs"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Keep one machine always running so there is no cold start.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 150
+    hard_limit = 200
+
+# Persistent disk for the Kloset store and the live ./docs.
+[[mounts]]
+  source = "plakar_data"
+  destination = "/data"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
