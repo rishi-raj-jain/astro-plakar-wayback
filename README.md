@@ -1,20 +1,14 @@
 # Nimbus Docs, a Wayback Machine for documentation, powered by Plakar + R2
 
-Browse a documentation site at any point in its history. Every past version is a
-[Plakar](https://www.plakar.io) snapshot kept in Cloudflare R2. Open one and the
-backend retrieves that version from the backup, including its pages, images,
-PDFs, CSV/JSON references, and stylesheet, then the page shows you the Plakar
-commands it ran to do it. You can also take a new backup or create a new version
-from the UI and watch the operations run.
+Browse a documentation site at any point in its history, securely and on-demand.
 
-It uses Astro (SSR) with [Svelte](https://svelte.dev) islands for the live client
-UI, TypeScript, and the real `plakar` CLI, with the store synced to R2 over its
-S3-compatible API (signed with [aws4fetch](https://github.com/mhart/aws4fetch)).
-Run it locally or deploy it to Fly.io (see below).
+Every past version is a [Plakar](https://www.plakar.io) encrypted snapshot remotely secured in Cloudflare R2.
+
+On-demand, the backend retrieves a given version from the backup, including its pages, images, PDFs, CSV/JSON references, and stylesheet.
 
 ## Backups and R2
 
-Click **Back up**. Fly runs `plakar` on the volume and, if R2 is configured, uploads a tarball of the store. On first boot an empty machine downloads that tarball.
+Click **Back up** to run `plakar` on the Fly.io volume and, if R2 is configured, automatically upload a tarball of the store. On first boot an empty machine downloads that tarball.
 
 ![Back up on Fly, snapshot with Plakar, then PUT/GET the store tarball on Cloudflare R2](diagram-flowchart.png)
 
@@ -29,7 +23,7 @@ PLAKAR_PASSPHRASE=wayback-demo plakar at ./.plakar/store create
 npm run dev
 ```
 
-Production build and serve:
+To build and serve in production:
 
 ```bash
 npm run build
