@@ -7,7 +7,7 @@ section: Guides
 
 ![The Nimbus 2.0 security dashboard](./images/dashboard.jpg)
 
-2.0 organises access around **teams**. Members get roles; deploy tokens are
+2.0 organises access around **teams**. Members get roles. Deploy tokens are
 minted per role and expire.
 
 ```bash
@@ -17,11 +17,11 @@ nimbus token mint --remote edge --scope deploy --ttl 1h
 
 | Role       | Can deploy | Can manage keys | Can invite |
 | ---------- | :--------: | :-------------: | :--------: |
-| `viewer`   |     –      |        –        |     –      |
-| `deployer` |     ✓      |        –        |     –      |
+| `viewer`   |     ✗      |        ✗        |     ✗      |
+| `deployer` |     ✓      |        ✗        |     ✗      |
 | `admin`    |     ✓      |        ✓        |     ✓      |
 
-Edge functions run in a sandbox with no ambient credentials — secrets are
+Edge functions run in a sandbox with no ambient credentials. Secrets are
 injected explicitly:
 
 ```bash

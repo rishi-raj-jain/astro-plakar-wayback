@@ -10,7 +10,8 @@
 import type { Op, Ops } from '@/lib/ops'
 import { PLAKAR_PASSPHRASE, PLAKAR_STORE, PLAKAR_STORE_LABEL } from 'astro:env/server'
 import { execFile, execFileSync } from 'node:child_process'
-import { join } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { promisify } from 'node:util'
 
 const execFileAsync = promisify(execFile)
@@ -285,4 +286,33 @@ export function diffRecursive(fromId: string, toId: string, ops?: Ops): string {
   const command = `plakar at ${STORE_LABEL} diff -recursive ${fromId.slice(0, 8)} ${toId.slice(0, 8)}`
   const doIt = () => plakarText(['diff', '-recursive', fromId, toId])
   return ops ? ops.run(command, doIt, (out) => ({ detail: 'compared trees', bytes: Buffer.byteLength(out) })) : doIt()
+}
+
+// ---- per-snapshot dedup stats ----------------------------------------------
+
+export interface SnapshotStat {
+  /** Logical size of the version's captured files, in bytes. */
+  captured: number
+  /** How much the store grew when this version was added, in bytes. */
+  added: number
+  /** Percent deduplicated away = 1 − added/captured (may be negative for the first). */
+  savedPct: number
+}
+
+let snapshotStatsCache: Record<string, SnapshotStat> | null = null
+
+/**
+ * Per-snapshot capture/added figures written by `npm run seed` (the live store
+ * can't reconstruct marginal deltas). Keyed by short snapshot id; empty when the
+ * file is absent (e.g. versions created from the UI). Read from a JSON sidecar
+ * next to the store so it travels with it onto the volume.
+ */
+export function snapshotStats(): Record<string, SnapshotStat> {
+  if (snapshotStatsCache) return snapshotStatsCache
+  try {
+    snapshotStatsCache = JSON.parse(readFileSync(join(dirname(STORE), 'snapshot-stats.json'), 'utf8'))
+  } catch {
+    snapshotStatsCache = {}
+  }
+  return snapshotStatsCache!
 }

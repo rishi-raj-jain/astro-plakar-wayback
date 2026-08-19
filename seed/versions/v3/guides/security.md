@@ -21,7 +21,7 @@ curl https://edge.nimbus.dev/audit \
   -H "Authorization: Bearer $NIMBUS_KEY"
 ```
 
-Rotating a key never interrupts serving — the old key stays valid for a grace
+Rotating a key never interrupts serving. The old key stays valid for a grace
 window:
 
 ```bash

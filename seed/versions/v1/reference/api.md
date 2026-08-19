@@ -19,8 +19,8 @@ fi
 
 Exit codes:
 
-- `0` — source and destination already match
-- `1` — changes were applied (or would be, with `--dry-run`)
-- `2` — an error occurred
+- `0`: source and destination already match
+- `1`: changes were applied (or would be, with `--dry-run`)
+- `2`: an error occurred
 
 A proper REST API is planned for the 1.0 release.

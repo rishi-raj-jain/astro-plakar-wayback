@@ -15,8 +15,8 @@ curl https://edge-1.nimbus.dev/status \
 
 Available endpoints:
 
-- `GET /status` — node health and last deploy time
-- `GET /manifest` — the file list currently served by the node
+- `GET /status`: node health and last deploy time
+- `GET /manifest`: the file list currently served by the node
 
-There is no write API yet; deploys go through the `nimbus` CLI. A full REST API
+There is no write API yet. Deploys go through the `nimbus` CLI. A full REST API
 (including `POST /run`) arrives in 1.0.

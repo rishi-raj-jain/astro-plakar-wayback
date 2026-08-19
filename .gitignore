@@ -6,3 +6,8 @@ dist/
 .env.*
 !.env.example
 .DS_Store
+
+# The live v5 docs are materialized by `npm run seed`. Its large shared media set
+# is overlaid from seed/shared/ (the single committed copy), so don't commit the
+# generated duplicate here.
+src/docs/media/

@@ -22,5 +22,5 @@ nimbus sync ./data ./out
 ```
 
 Everything under `./data` is copied to `./out`. Files that already match are
-skipped. There is no daemon and no watching yet — you run `nimbus sync` whenever
+skipped. There is no daemon and no watching yet. You run `nimbus sync` whenever
 you want to sync.

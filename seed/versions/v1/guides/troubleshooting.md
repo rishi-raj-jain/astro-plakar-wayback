@@ -7,7 +7,7 @@ section: Guides
 
 ![A sync in progress](./images/flow.jpg)
 
-**Nothing happened.** Make sure you ran `nimbus init` in the project first — the
+**Nothing happened.** Make sure you ran `nimbus init` in the project first. The
 sync refuses to run without a `.nimbus` marker.
 
 **Some files were skipped.** Nimbus compares size and modification time. Touch a

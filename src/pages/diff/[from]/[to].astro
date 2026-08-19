@@ -47,8 +47,8 @@ const summaryBits = [counts.changed && `${counts.changed} changed`, counts.added
 
     <main class="doc-main">
       <p class="banner">
-        Comparing <strong>{from.label}</strong> ({stamp(from)}) → <strong>{to.label}</strong> ({stamp(to)}). The diff is computed by <code>plakar diff</code> reading both encrypted snapshots
-        — watch the command in the panel on the right.
+        Comparing <strong>{from.label}</strong> ({stamp(from)}) → <strong>{to.label}</strong> ({stamp(to)}). The diff is computed by <code>plakar diff</code> reading both encrypted snapshots.
+        Watch the command in the panel on the right.
       </p>
 
       {
@@ -86,7 +86,7 @@ const summaryBits = [counts.changed && `${counts.changed} changed`, counts.added
                       ))}
                     </pre>
                   ) : c.kind === 'binary' ? (
-                    <p class="muted">Binary file — the bytes differ between versions (for example an image or PDF that was replaced).</p>
+                    <p class="muted">Binary file. The bytes differ between versions (for example an image or PDF that was replaced).</p>
                   ) : c.kind === 'added' ? (
                     <p class="muted">
                       New in {to.label}. It did not exist in {from.label}.

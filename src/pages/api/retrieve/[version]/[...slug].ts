@@ -8,7 +8,7 @@
 // Events (one JSON object per line):
 //   { type: 'op',      op: { command, detail, ms, bytes } }
 //   { type: 'meta',    label, id, stamp, versions: [...] }
-//   { type: 'store',   info: {...}, diffHref, diffLabel }
+//   { type: 'store',   info: {...}, diffHref, diffLabel, versionStat }
 //   { type: 'content', title, html, theme, referenced: [...], allFiles: [...] }
 //   { type: 'done',    totals: { count, ms, bytes } }
 //   { type: 'error',   message }
@@ -17,7 +17,7 @@ export const prerender = false
 
 import { buildVersions, getNav, renderDoc, switcherChips, THEME_SLUG } from '@/lib/docs'
 import { Ops, type Op } from '@/lib/ops'
-import { listSnapshotsAsync, storeInfo, STORE_LABEL } from '@/lib/plakar'
+import { listSnapshotsAsync, snapshotStats, storeInfo, STORE_LABEL } from '@/lib/plakar'
 import { ensureRestored, entriesFor } from '@/lib/restore'
 import type { APIRoute } from 'astro'
 import matter from 'gray-matter'
@@ -58,7 +58,8 @@ export const GET: APIRoute = ({ params }) => {
         const version = versions.find((v) => v.key === versionKey)
         if (!version || version.live) return fail('This version was not found in the backup.')
 
-        // The next older snapshot, so the page can link to "what changed since then".
+        // The next older snapshot, the change set that produced THIS version, so
+        // "See what changed" reflects the version being viewed (v(N-1) → vN).
         const snapVersions = versions.filter((v) => !v.live) // newest → oldest
         const selfIdx = snapVersions.findIndex((v) => v.key === versionKey)
         const prev = selfIdx >= 0 && selfIdx < snapVersions.length - 1 ? snapVersions[selfIdx + 1] : null
@@ -70,18 +71,19 @@ export const GET: APIRoute = ({ params }) => {
           id: version.id,
           stamp: version.date.toISOString().replace('T', ' ').slice(0, 19),
           versions: switcherChips(versions, slug, versionKey),
-          diffHref: prev ? `/diff/${prev.key}/${versionKey}` : null,
-          prevLabel: prev?.label ?? null,
         })
 
-        // The encrypted-store facts panel (same store-wide numbers every version
-        // sees), plus a link to the latest saved change set.
-        const latest = snapVersions.length >= 2 ? { from: snapVersions[1], to: snapVersions[0] } : null
+        // The encrypted-store facts panel: store-wide numbers, a "See what changed"
+        // link scoped to THIS version's diff, and this version's own dedup figures
+        // (captured vs added). `baseline` marks the first snapshot, which pays for
+        // the shared media the later versions dedup against.
+        const stat = snapshotStats()[version.id!]
         send({
           type: 'store',
           info: storeInfo(),
-          diffHref: latest ? `/diff/${latest.from.key}/${latest.to.key}` : null,
-          diffLabel: latest ? `${latest.from.label} → ${latest.to.label}` : null,
+          diffHref: prev ? `/diff/${prev.key}/${versionKey}` : null,
+          diffLabel: prev ? `${prev.label} → ${version.label}` : null,
+          versionStat: stat ? { ...stat, label: version.label, baseline: !prev } : null,
         })
 
         // 2. Decrypt the whole snapshot once (or reuse the cached plaintext).

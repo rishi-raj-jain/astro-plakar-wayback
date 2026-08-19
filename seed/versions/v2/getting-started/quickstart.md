@@ -28,7 +28,7 @@ type = "local"
 path = "./out"
 ```
 
-Then sync using the file — no paths to remember:
+Then sync using the file, with no paths to remember:
 
 ```bash
 nimbus sync

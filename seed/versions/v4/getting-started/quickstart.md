@@ -8,7 +8,7 @@ section: Getting started
 Watch the overview, then set up a project with zero-downtime deploys.
 
 <div class="embed embed-video"><iframe src="https://www.youtube.com/embed/jNQXAC9IVRw" title="Nimbus 1.5 overview" allowfullscreen loading="lazy"></iframe></div>
-<p class="embed-caption">Placeholder video — swap in your product walkthrough.</p>
+<p class="embed-caption">Placeholder video. Swap in your product walkthrough.</p>
 
 ```bash
 nimbus init

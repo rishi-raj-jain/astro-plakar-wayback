@@ -11,7 +11,7 @@ Deploy to every region of a remote with one command:
 nimbus deploy --remote edge
 ```
 
-Or trigger a deploy over the new REST API — handy from a webhook:
+Or trigger a deploy over the new REST API, handy from a webhook:
 
 ```bash
 curl -X POST https://edge.nimbus.dev/run \

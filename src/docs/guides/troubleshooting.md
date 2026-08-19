@@ -20,7 +20,7 @@ Two config keys changed in 2.0:
 -[remote.edge]
 -single_token = "nk_live_..."
 +[remote.edge]
-+# tokens are now minted per role — see Security
++# tokens are now minted per role (see Security)
 ```
 
 Run the migration helper to rewrite an old file in place:

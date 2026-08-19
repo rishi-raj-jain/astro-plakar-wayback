@@ -17,5 +17,5 @@ it with `--dry-run` first:
 nimbus sync ./data ./out --delete --dry-run
 ```
 
-Remote sources and API keys arrive in a later release; this page will grow with
+Remote sources and API keys arrive in a later release. This page will grow with
 them.

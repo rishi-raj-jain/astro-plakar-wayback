@@ -44,17 +44,19 @@ COPY --from=builder /usr/local/bin/plakar /usr/local/bin/plakar
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-# The built server, the starting docs (v5), and the pre-built v1…v5 store — both
+# The built server, the starting docs (v5), and the pre-built v1…v5 store, both
 # copied onto the volume on first boot.
 COPY --from=builder /build/dist ./dist
 COPY --from=builder /build/src/docs ./seed/docs
 COPY --from=builder /build/.plakar/store ./seed/store
+# Per-snapshot dedup figures the seed recorded (the store can't reconstruct them).
+COPY --from=builder /build/.plakar/snapshot-stats.json ./seed/snapshot-stats.json
 # The R2 fetch helper the entrypoint uses to bootstrap the store from R2.
 COPY --from=builder /build/r2-fetch.mjs ./r2-fetch.mjs
 
 # Bump SEED_VERSION to force the entrypoint to reinstall the baked history over
 # an existing volume on the next deploy (otherwise the volume persists as-is).
-ARG SEED_VERSION=1
+ARG SEED_VERSION=3
 RUN echo "$SEED_VERSION" > ./seed/SEED_VERSION
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

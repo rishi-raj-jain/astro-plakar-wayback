@@ -4,7 +4,7 @@
 # The image bakes the starting docs (/app/seed/docs) and the pre-built v1…v5
 # Kloset store (/app/seed/store), stamped with /app/seed/SEED_VERSION. The volume
 # is (re)seeded when it has no store yet, or when the image's SEED_VERSION differs
-# from the one recorded on the volume — so bumping SEED_VERSION in the Dockerfile
+# from the one recorded on the volume. Bumping SEED_VERSION in the Dockerfile
 # reinstalls the canonical history on the next deploy. Otherwise the volume is the
 # source of truth, so versions created from the UI survive restarts and redeploys.
 set -e
@@ -24,6 +24,8 @@ if [ ! -f "$DATA/store/CONFIG" ] || [ "$BAKED_VER" != "$CUR_VER" ]; then
   if [ -f /app/seed/store/CONFIG ]; then
     echo "Installing the baked v1…v5 history …"
     cp -a /app/seed/store "$DATA/store"
+    # Per-snapshot dedup figures, read by the app from next to the store.
+    cp /app/seed/snapshot-stats.json "$DATA/snapshot-stats.json" 2>/dev/null || true
   elif node /app/r2-fetch.mjs /tmp/store.tar.gz; then
     echo "Restoring store from R2 …"
     tar -C "$DATA" -xzf /tmp/store.tar.gz

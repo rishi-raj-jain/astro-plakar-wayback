@@ -15,8 +15,8 @@ nimbus sync ./data ./out --exclude "*.tmp" --dry-run
 
 The available flags are:
 
-- `--exclude <glob>` — skip files matching a glob (repeatable)
-- `--dry-run` — print what would change without writing anything
-- `--delete` — remove files in the destination that are gone from the source
+- `--exclude <glob>`: skip files matching a glob (repeatable)
+- `--dry-run`: print what would change without writing anything
+- `--delete`: remove files in the destination that are gone from the source
 
 A config file is planned so you do not have to repeat these on every run.

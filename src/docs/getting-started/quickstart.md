@@ -8,7 +8,7 @@ section: Getting started
 Watch the 2.0 launch tour, then ship your first edge function.
 
 <div class="embed embed-video"><iframe src="https://www.youtube.com/embed/jNQXAC9IVRw" title="Nimbus 2.0 launch" allowfullscreen loading="lazy"></iframe></div>
-<p class="embed-caption">Placeholder video — swap in your product walkthrough.</p>
+<p class="embed-caption">Placeholder video. Swap in your product walkthrough.</p>
 
 Scaffold a project and run it live:
 
@@ -17,7 +17,7 @@ nimbus init
 nimbus run --watch
 ```
 
-Add an edge function — a small handler that runs at every region:
+Add an edge function, a small handler that runs at every region:
 
 ```ts
 // functions/hello.ts

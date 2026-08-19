@@ -67,7 +67,7 @@ function parseDiff(out: string, roots: string[]): Map<string, FileChange> {
       }
       i++
     } else {
-      i++ // "Common subdirectories" / "Only in" — handled via the file sets
+      i++ // "Common subdirectories" / "Only in", handled via the file sets
     }
   }
   return changed

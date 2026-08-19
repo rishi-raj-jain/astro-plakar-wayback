@@ -258,8 +258,8 @@ export interface RenderResult {
  * Render markdown to HTML, rewriting every relative asset reference to this
  * version's copy. Two passes:
  *   1. Markdown image/link tokens (`![](./x.png)`, `[](./x.pdf)`).
- *   2. Raw-HTML embeds in the doc body — `src`/`data`/`poster` on <iframe>,
- *      <embed>, <object>, <video>, <img> — so an embedded PDF or image points at
+ *   2. Raw-HTML embeds in the doc body: `src`/`data`/`poster` on <iframe>,
+ *      <embed>, <object>, <video>, <img>, so an embedded PDF or image points at
  *      /assets/<version>/… and archived versions embed their own copy. External
  *      URLs (a YouTube <iframe>, absolute paths) are left untouched.
  */

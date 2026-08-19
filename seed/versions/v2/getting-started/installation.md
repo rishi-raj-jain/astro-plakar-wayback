@@ -24,4 +24,4 @@ nimbus --version
 ```
 
 Upgrading from 0.1? The `sync` command still works, but projects now use a
-`nimbus.toml` file — see [Configuration](../guides/configuration/).
+`nimbus.toml` file. See [Configuration](../guides/configuration/).

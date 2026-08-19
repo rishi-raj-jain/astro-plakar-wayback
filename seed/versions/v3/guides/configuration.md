@@ -32,4 +32,4 @@ nimbus config show --resolved
 ```
 
 As of 1.0 Nimbus refuses to start if `NIMBUS_KEY` is stored in a world-readable
-file — keep it in a secret manager or the environment.
+file. Keep it in a secret manager or the environment.

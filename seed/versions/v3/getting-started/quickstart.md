@@ -8,7 +8,7 @@ section: Getting started
 New to Nimbus? Watch the two-minute tour, then follow along below.
 
 <div class="embed embed-video"><iframe src="https://www.youtube.com/embed/jNQXAC9IVRw" title="Nimbus in two minutes" allowfullscreen loading="lazy"></iframe></div>
-<p class="embed-caption">Placeholder video — swap in your product walkthrough.</p>
+<p class="embed-caption">Placeholder video. Swap in your product walkthrough.</p>
 
 Initialise and run a live sync that re-deploys on every change:
 

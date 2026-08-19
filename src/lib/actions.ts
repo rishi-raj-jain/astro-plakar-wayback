@@ -31,7 +31,7 @@ const ACCENTS = ['#e11d48', '#ea580c', '#16a34a', '#0891b2', '#9333ea', '#2563eb
 /**
  * One click = one new saved version. Backs up the current ./docs so it becomes a
  * permanent, browsable snapshot, then edits ./docs in place (a theme recolor and
- * a dated note) so the new live "current" version visibly differs — while keeping
+ * a dated note) so the new live "current" version visibly differs, while keeping
  * the exact same file paths every version has.
  */
 export function createNewVersion(): ActionResult {
@@ -54,7 +54,7 @@ export function createNewVersion(): ActionResult {
     `edit docs/theme.css (accent ${accent})`,
     () => {
       const override =
-        `\n/* v${nextNum} — recolored by "Create a new version" */\n` +
+        `\n/* v${nextNum}: recolored by "Create a new version" */\n` +
         `.doc { --accent: ${accent}; }\n` +
         `.doc h1, .doc h2, .doc h3 { color: ${accent}; }\n` +
         `.doc a { color: ${accent}; }\n`

@@ -13,8 +13,8 @@ Remote destinations need an API key. Create one in the dashboard and export it:
 export NIMBUS_KEY="nk_live_..."
 ```
 
-Nimbus reads `NIMBUS_KEY` from the environment. **Never** put it in
-`nimbus.toml` — that file is meant to be committed.
+Nimbus reads `NIMBUS_KEY` from the environment. Never put it in
+`nimbus.toml`. That file is meant to be committed.
 
 Keys are scoped to a single remote and can be rotated without downtime:
 

@@ -30,7 +30,7 @@ nimbus releases list --remote edge
 nimbus rollback --remote edge rel_9e11
 ```
 
-<div class="callout callout-tip"><div class="callout-title">Tip</div>A rollback is just a deploy of an older release, so it drains the same way — no downtime, no rebuild.</div>
+<div class="callout callout-tip"><div class="callout-title">Tip</div>A rollback is just a deploy of an older release, so it drains the same way, with no downtime and no rebuild.</div>
 
 ## Observability
 
