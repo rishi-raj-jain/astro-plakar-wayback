@@ -281,11 +281,24 @@ export function storeInfo(ops?: Ops): StoreInfo {
 
 // ---- diff ------------------------------------------------------------------
 
+// A diff between two snapshots is a pure function of their (content-addressed,
+// immutable) ids, so once computed it's valid for this machine's lifetime — no
+// TTL, no invalidation. Keyed by `fromId:toId`.
+const diffCache = new Map<string, string>()
+
 /** Raw `plakar diff -recursive A B` output (short ids are fine with -recursive). */
 export function diffRecursive(fromId: string, toId: string, ops?: Ops): string {
   const command = `plakar at ${STORE_LABEL} diff -recursive ${fromId.slice(0, 8)} ${toId.slice(0, 8)}`
+  const key = `${fromId}:${toId}`
+  const cached = diffCache.get(key)
+  if (cached !== undefined) {
+    if (ops) ops.entries.push({ command, detail: 'compared trees (cached)', ms: 1, bytes: Buffer.byteLength(cached) })
+    return cached
+  }
   const doIt = () => plakarText(['diff', '-recursive', fromId, toId])
-  return ops ? ops.run(command, doIt, (out) => ({ detail: 'compared trees', bytes: Buffer.byteLength(out) })) : doIt()
+  const out = ops ? ops.run(command, doIt, (o) => ({ detail: 'compared trees', bytes: Buffer.byteLength(o) })) : doIt()
+  diffCache.set(key, out)
+  return out
 }
 
 // ---- per-snapshot dedup stats ----------------------------------------------
