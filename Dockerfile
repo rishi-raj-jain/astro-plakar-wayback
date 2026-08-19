@@ -56,7 +56,7 @@ COPY --from=builder /build/r2-fetch.mjs ./r2-fetch.mjs
 
 # Bump SEED_VERSION to force the entrypoint to reinstall the baked history over
 # an existing volume on the next deploy (otherwise the volume persists as-is).
-ARG SEED_VERSION=3
+ARG SEED_VERSION=4
 RUN echo "$SEED_VERSION" > ./seed/SEED_VERSION
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

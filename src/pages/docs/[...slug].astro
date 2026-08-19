@@ -11,7 +11,7 @@ import Shell from '@/layouts/Shell.astro'
 import { versionPairs } from '@/lib/diff'
 import { getAssetBytes, getEntries, getNav, getPage, getTheme, getVersions, renderDoc, switcherVersions } from '@/lib/docs'
 import { fmtBytes, Ops } from '@/lib/ops'
-import { storeInfo } from '@/lib/plakar'
+import { snapshotStats, storeInfo } from '@/lib/plakar'
 
 const slug = (Astro.params.slug ?? '').replace(/\/$/, '')
 
@@ -32,6 +32,9 @@ const versions = switcherVersions(slug, 'current')
 const store = storeInfo(ops)
 const latestPair = versionPairs()[0] ?? null
 const storeDiff = latestPair ? { href: `/diff/${latestPair.from.key}/${latestPair.to.key}`, label: `${latestPair.from.label} → ${latestPair.to.label}` } : null
+// The current version is also the newest snapshot, so it has its own dedup stat.
+const currentStat = version.id ? snapshotStats()[version.id] : null
+const versionStat = currentStat ? { ...currentStat, label: version.label, baseline: version.num === 1 } : null
 ---
 
 <Shell title={`${page.title} · ${version.label} (current)`}>
@@ -67,7 +70,7 @@ const storeDiff = latestPair ? { href: `/diff/${latestPair.from.key}/${latestPai
         heading={`Serving ${version.label} (current)`}
         note="The current version is read live from src/docs. Browse an older version to watch Plakar retrieve it from the backup."
       />
-      <StorePanel info={store} diffHref={storeDiff?.href ?? null} diffLabel={storeDiff?.label ?? null} />
+      <StorePanel info={store} diffHref={storeDiff?.href ?? null} diffLabel={storeDiff?.label ?? null} versionStat={versionStat} />
       <VersionActions client:load />
     </aside>
   </div>

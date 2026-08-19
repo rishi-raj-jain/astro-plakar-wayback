@@ -84,8 +84,8 @@ export function diffVersions(fromKey: string, toKey: string, ops?: Ops): DiffRes
   if (!a || !b) return { from: a ?? b!, to: b ?? a!, changes: [], unchanged: 0, error: 'One of those versions is not in the backup.' }
   // Oldest first: added/removed/changed are all expressed as "from → to".
   const [from, to] = a.date <= b.date ? [a, b] : [b, a]
-  if (from.live || to.live) {
-    return { from, to, changes: [], unchanged: 0, error: 'Only saved versions can be compared. Back up the current version first.' }
+  if (!from.id || !to.id) {
+    return { from, to, changes: [], unchanged: 0, error: 'Only saved versions can be compared.' }
   }
 
   const fromEntries = getEntries(from, ops)
@@ -120,7 +120,7 @@ export function diffVersions(fromKey: string, toKey: string, ops?: Ops): DiffRes
  * Only saved (snapshot) versions, so every pair is comparable.
  */
 export function versionPairs(ops?: Ops): { from: Version; to: Version }[] {
-  const snaps = getVersions(ops).filter((v) => !v.live) // newest → oldest
+  const snaps = getVersions(ops).filter((v) => v.id) // every backed-up version, newest → oldest
   const pairs: { from: Version; to: Version }[] = []
   for (let i = 0; i < snaps.length - 1; i++) pairs.push({ from: snaps[i + 1], to: snaps[i] })
   return pairs

@@ -29,26 +29,16 @@ export interface ActionResult {
 const ACCENTS = ['#e11d48', '#ea580c', '#16a34a', '#0891b2', '#9333ea', '#2563eb']
 
 /**
- * One click = one new saved version. Backs up the current ./docs so it becomes a
- * permanent, browsable snapshot, then edits ./docs in place (a theme recolor and
- * a dated note) so the new live "current" version visibly differs, while keeping
- * the exact same file paths every version has.
+ * One click = one new saved version. Edits ./docs in place (a theme recolor and a
+ * dated note, keeping the same file paths), then backs it up. Because the current
+ * version is always the newest snapshot, mutating first and backing up second
+ * keeps src/docs in sync with the snapshot it represents.
  */
 export function createNewVersion(): ActionResult {
   const ops = new Ops()
-  const before = listSnapshots().length
-  const savedNum = before + 1 // the current version we back up now
-  const nextNum = before + 2 // the new live current after we mutate
+  const nextNum = listSnapshots().length + 1 // the new current after we mutate + save
 
-  // 1. Back up the current docs, so this version is saved and retrievable.
-  runPlakar(['backup', DOCS], ops, `plakar at ${STORE_LABEL} backup ./docs (save v${savedNum})`, (out) => {
-    const m = out.match(/^([0-9a-f]{8})/m)
-    return { detail: m ? `snapshot ${m[1]} = v${savedNum}` : `saved v${savedNum}` }
-  })
-  runPlakar(['check'], ops, `plakar at ${STORE_LABEL} check`, () => ({ detail: 'integrity verified' }))
-  invalidatePlakarCache() // the backup added a snapshot
-
-  // 2. Mutate ./docs into v{nextNum} by editing EXISTING files (same paths).
+  // 1. Mutate ./docs into v{nextNum} by editing EXISTING files (same paths).
   const accent = ACCENTS[nextNum % ACCENTS.length]
   ops.run(
     `edit docs/theme.css (accent ${accent})`,
@@ -78,9 +68,14 @@ export function createNewVersion(): ActionResult {
     (b) => ({ detail: 'page updated', bytes: Buffer.byteLength(b) }),
   )
 
-  // v{savedNum} is now a saved snapshot; v{nextNum} is the live current, which
-  // the next click will save in turn. So one click adds exactly one saved version
-  // and advances the current by one.
+  // 2. Back up the mutated docs, so v{nextNum} becomes the new saved current.
+  runPlakar(['backup', DOCS], ops, `plakar at ${STORE_LABEL} backup ./docs (save v${nextNum})`, (out) => {
+    const m = out.match(/^([0-9a-f]{8})/m)
+    return { detail: m ? `snapshot ${m[1]} = v${nextNum}` : `saved v${nextNum}` }
+  })
+  runPlakar(['check'], ops, `plakar at ${STORE_LABEL} check`, () => ({ detail: 'integrity verified' }))
+  invalidatePlakarCache() // the backup added a snapshot
+
   const snaps = listSnapshots(ops)
   return { ok: true, ops: ops.entries, newVersion: nextNum, snapshotCount: snaps.length, latest: snaps[0] }
 }

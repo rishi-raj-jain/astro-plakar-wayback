@@ -2,9 +2,10 @@
 //
 // seed/versions/v1 … seed/versions/v5 are five states of the SAME documentation
 // site (same file paths, different content, images, CSS, and embeds). This script
-// wipes the Kloset store, then for v1…v4 copies that version into src/docs and
-// takes a Plakar snapshot, so each becomes a browsable past version. v5 is left
-// in src/docs as the live "current" version. The result is v1…v5 in the app.
+// wipes the Kloset store, then copies each version into src/docs and takes a
+// Plakar snapshot, so all of v1…v5 become saved, browsable versions. v5, the
+// newest, is left in src/docs and shown as the live "current" version, so it is
+// both the latest version and a backed-up snapshot.
 //
 // Run with:  npm run seed        (uses PLAKAR_PASSPHRASE, default "wayback-demo")
 //
@@ -30,7 +31,9 @@ const PASSPHRASE = process.env.PLAKAR_PASSPHRASE ?? 'wayback-demo'
 const env = { ...process.env, PLAKAR_PASSPHRASE: PASSPHRASE }
 
 const VERSIONS = ['v1', 'v2', 'v3', 'v4', 'v5']
-const LIVE = VERSIONS[VERSIONS.length - 1] // v5 stays in src/docs as "current"
+// All five authored versions are backed up as snapshots. v5, the newest, stays
+// in src/docs and is shown as the live "current" version, so it is both the
+// latest version and a saved, browsable snapshot.
 
 function plakar(args) {
   return execFileSync('plakar', ['at', STORE, ...args], { env, stdio: ['ignore', 'pipe', 'pipe'] }).toString()
@@ -59,13 +62,14 @@ rmSync(STORE, { recursive: true, force: true })
 mkdirSync(STORE, { recursive: true })
 execFileSync('plakar', ['at', STORE, 'create'], { env, stdio: 'inherit' })
 
-// 2. Snapshot v1…v(n-1) as past versions, recording per-snapshot dedup stats:
-//    `captured` = the version's logical size; `added` = how much the store grew
-//    (so `captured - added` is what content-defined chunking deduplicated away).
-//    The live app can't reconstruct these marginal deltas from the finished
-//    store, so they are captured here and written to snapshot-stats.json.
+// 2. Snapshot every authored version (v1…v5) as a saved version, recording
+//    per-snapshot dedup stats: `captured` = the version's logical size; `added`
+//    = how much the store grew (so `captured - added` is what content-defined
+//    chunking deduplicated away). The live app can't reconstruct these marginal
+//    deltas from the finished store, so they are captured here and written to
+//    snapshot-stats.json.
 const stats = {}
-for (const version of VERSIONS.slice(0, -1)) {
+for (const version of VERSIONS) {
   replaceDocs(version)
   const before = storageBytes()
   const out = plakar(['backup', DOCS])
@@ -78,9 +82,9 @@ for (const version of VERSIONS.slice(0, -1)) {
 }
 writeFileSync(join(dirname(STORE), 'snapshot-stats.json'), JSON.stringify(stats, null, 2))
 
-// 3. Leave the newest version live in src/docs.
-replaceDocs(LIVE)
-console.log(`▸ ${LIVE} → src/docs (live current version)`)
+// 3. src/docs already holds v5 (the last loop iteration), so v5 is the live
+//    current version and also the newest snapshot. Nothing else to do.
+console.log(`▸ v${VERSIONS.length} → src/docs (live current version, also a snapshot)`)
 
 // 4. Drop Plakar's shared caches so the app reflects the rebuilt store exactly.
 rmSync(join(homedir(), '.cache', 'plakar'), { recursive: true, force: true })
@@ -89,7 +93,7 @@ rmSync(join(tmpdir(), 'plakar-restore'), { recursive: true, force: true })
 // 5. Show the result.
 console.log('\n▸ snapshots now in the store:')
 process.stdout.write(plakar(['ls']))
-console.log(`\n✓ history rebuilt: v1…v${VERSIONS.length} (v${VERSIONS.length} is the live current version)`)
+console.log(`\n✓ history rebuilt: v1…v${VERSIONS.length} backed up as snapshots, v${VERSIONS.length} is the live current version`)
 
 if (!existsSync(join(DOCS, 'theme.css'))) {
   console.error('⚠ src/docs/theme.css missing, check the seed trees')

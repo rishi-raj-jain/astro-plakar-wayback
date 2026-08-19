@@ -73,19 +73,25 @@ export function walkFiles(dir: string): string[] {
 
 // ---- versions --------------------------------------------------------------
 
-/** Build the version list (current + one per snapshot) from raw snapshots. */
+/**
+ * Build the version list from raw snapshots. The newest snapshot is the live
+ * "current" version: src/docs mirrors it, so it is both the latest version and a
+ * saved, backed-up snapshot. The older snapshots are the archived past versions.
+ * An unseeded store (no snapshots) falls back to a single live v1 with no backup.
+ */
 export function buildVersions(snaps: Snapshot[]): Version[] {
-  const total = snaps.length + 1
-  const current: Version = { key: 'current', num: total, label: `v${total}`, live: true, date: new Date() }
-  const history: Version[] = snaps.map((s, i) => ({
-    key: `${s.date.toISOString().slice(0, 10)}-${s.id}`,
-    num: total - 1 - i,
-    label: `v${total - 1 - i}`,
-    live: false,
+  if (snaps.length === 0) {
+    return [{ key: 'current', num: 1, label: 'v1', live: true, date: new Date() }]
+  }
+  const total = snaps.length
+  return snaps.map((s, i) => ({
+    key: i === 0 ? 'current' : `${s.date.toISOString().slice(0, 10)}-${s.id}`,
+    num: total - i,
+    label: `v${total - i}`,
+    live: i === 0,
     date: s.date,
     id: s.id,
   }))
-  return [current, ...history]
 }
 
 /** Every version, newest first: the live current docs, then each snapshot. */
