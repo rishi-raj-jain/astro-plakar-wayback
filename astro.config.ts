@@ -7,7 +7,6 @@ import { defineConfig, envField } from 'astro/config'
 // the plakar binary. Run with `npm run dev`, or built and served with `npm run start`.
 export default defineConfig({
   output: 'server',
-  server: { port: 3000 },
   integrations: [svelte()],
   adapter: node({ mode: 'standalone' }),
   redirects: { '/': '/docs/getting-started/installation/' },
