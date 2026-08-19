@@ -105,6 +105,16 @@ code {
   font-weight: 600;
   letter-spacing: -0.02em;
 }
+.topbar .gh-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+.topbar .gh-link:hover {
+  color: var(--ink);
+}
 .topbar .tag {
   color: var(--muted);
   font-size: 12px;

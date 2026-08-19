@@ -2,7 +2,10 @@
 .doc {
   --accent: #4f46e5;
   font-family:
-    'Inter', system-ui, -apple-system, sans-serif;
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
   line-height: 1.7;
   color: #1e1b2e;
 }

@@ -3,7 +3,10 @@
   --accent: #7c3aed;
   --accent-soft: #f3efff;
   font-family:
-    'Inter', system-ui, -apple-system, sans-serif;
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
   line-height: 1.75;
   color: #1c1917;
   font-size: 16px;
