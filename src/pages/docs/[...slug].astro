@@ -4,11 +4,14 @@ export const prerender = false
 import Intro from '@/components/Intro.astro'
 import OpsPanel from '@/components/OpsPanel.svelte'
 import Sidebar from '@/components/Sidebar.svelte'
+import StorePanel from '@/components/StorePanel.svelte'
 import VersionActions from '@/components/VersionActions.svelte'
 import VersionSwitcher from '@/components/VersionSwitcher.svelte'
 import Shell from '@/layouts/Shell.astro'
+import { versionPairs } from '@/lib/diff'
 import { getAssetBytes, getEntries, getNav, getPage, getTheme, getVersions, renderDoc, switcherVersions } from '@/lib/docs'
 import { fmtBytes, Ops } from '@/lib/ops'
+import { storeInfo } from '@/lib/plakar'
 
 const slug = (Astro.params.slug ?? '').replace(/\/$/, '')
 
@@ -26,6 +29,9 @@ const manifest = referenced.map((aslug) => {
   return { slug: aslug, bytes: bytes ? bytes.length : 0, href: `/assets/${version.key}/${aslug}` }
 })
 const versions = switcherVersions(slug, 'current')
+const store = storeInfo(ops)
+const latestPair = versionPairs()[0] ?? null
+const storeDiff = latestPair ? { href: `/diff/${latestPair.from.key}/${latestPair.to.key}`, label: `${latestPair.from.label} → ${latestPair.to.label}` } : null
 ---
 
 <Shell title={`${page.title} · ${version.label} (current)`}>
@@ -61,6 +67,7 @@ const versions = switcherVersions(slug, 'current')
         heading={`Serving ${version.label} (current)`}
         note="The current version is read live from src/docs. Browse an older version to watch Plakar retrieve it from the backup."
       />
+      <StorePanel info={store} diffHref={storeDiff?.href ?? null} diffLabel={storeDiff?.label ?? null} />
       <VersionActions client:load />
     </aside>
   </div>

@@ -1,0 +1,7 @@
+key,default,description
+project.name,,project identifier
+project.concurrency,8,number of parallel workers
+source.type,local,source kind (local or remote)
+remote.regions,,list of region codes to deploy to
+run.poll,,polling interval when watching (e.g. 2s)
+NIMBUS_KEY,,scoped API key (env or secret manager only)

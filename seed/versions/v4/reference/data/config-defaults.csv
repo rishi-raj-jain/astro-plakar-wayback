@@ -1,0 +1,7 @@
+key,default,description
+project.concurrency,12,number of parallel workers
+plugin.name,,plugin to load during sync
+remote.strategy,drain,deploy strategy (drain or replace)
+deploy.drain_timeout,60s,force-cycle instances after this window
+telemetry.otlp_endpoint,,OpenTelemetry collector endpoint
+telemetry.metrics,false,expose Prometheus metrics

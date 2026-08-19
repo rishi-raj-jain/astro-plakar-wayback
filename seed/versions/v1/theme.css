@@ -1,0 +1,47 @@
+/* Nimbus 0.1 docs theme — plain and utilitarian: serif headings, blue links. */
+.doc {
+  --accent: #1a56db;
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.75;
+  color: #1b1b1b;
+}
+.doc h1,
+.doc h2,
+.doc h3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  color: #111;
+}
+.doc h1 {
+  border-bottom: 2px solid #e5e5e5;
+  padding-bottom: 6px;
+}
+.doc a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.doc code {
+  font-family: ui-monospace, Menlo, monospace;
+  background: #f2f2f2;
+  border-radius: 3px;
+}
+.doc pre {
+  background: #f6f6f6;
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+}
+.doc img {
+  border: 1px solid #ddd;
+}
+.doc blockquote {
+  border-left: 4px solid #1a56db;
+  color: #555;
+  font-style: italic;
+}
+.doc th,
+.doc td {
+  border-color: #ddd;
+}
+.doc thead th {
+  background: #f2f2f2;
+}

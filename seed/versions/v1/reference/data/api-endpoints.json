@@ -1,0 +1,10 @@
+{
+  "version": "0.1.0",
+  "api": false,
+  "note": "Nimbus 0.1 is a CLI only. No HTTP endpoints are exposed.",
+  "exitCodes": {
+    "0": "source and destination already match",
+    "1": "changes applied",
+    "2": "error"
+  }
+}

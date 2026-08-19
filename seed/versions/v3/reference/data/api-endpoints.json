@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "auth": "bearer",
+  "endpoints": [
+    { "method": "GET", "path": "/status", "desc": "node health and last deploy" },
+    { "method": "GET", "path": "/manifest", "desc": "files currently served" },
+    { "method": "GET", "path": "/audit", "desc": "signed deploy history" },
+    { "method": "POST", "path": "/run", "desc": "trigger a deploy" }
+  ]
+}

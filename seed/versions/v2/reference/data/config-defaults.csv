@@ -1,0 +1,7 @@
+key,default,description
+project.name,,project identifier
+project.concurrency,4,number of parallel workers
+source.type,local,source kind (local or remote)
+source.exclude,,globs to skip
+destination.type,local,destination kind (local or remote)
+NIMBUS_KEY,,API key for remote destinations (env only)

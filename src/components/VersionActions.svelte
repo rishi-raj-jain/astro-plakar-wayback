@@ -32,10 +32,9 @@
 
 <section class="vactions card">
   <h3>Current version</h3>
-  <p class="muted">Snapshot the live docs, or advance to a new version.</p>
+  <p class="muted">Back up the current docs as a saved version and advance to a new one.</p>
   <div class="vactions-btns">
-    <button class="btn sm" disabled={busy} onclick={() => fire('/api/backup', 'Backing up current version')}>Back up</button>
-    <button class="btn secondary sm" disabled={busy} onclick={() => fire('/api/version', 'Creating a new version')}>Create new version</button>
+    <button class="btn sm" disabled={busy} onclick={() => fire('/api/version', 'Creating a new version')}>Create new version</button>
   </div>
   {#if open}
     <div class="vresult">

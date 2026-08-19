@@ -1,0 +1,5 @@
+flag,default,description
+--exclude,,skip files matching a glob (repeatable)
+--dry-run,false,show the plan without writing
+--delete,false,delete extra files in the destination
+--force,false,copy even when size and mtime match

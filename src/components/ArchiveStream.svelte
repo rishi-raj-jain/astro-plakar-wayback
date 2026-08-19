@@ -6,6 +6,7 @@
   // command finishes.
   import OpsPanel from '@/components/OpsPanel.svelte'
   import Sidebar from '@/components/Sidebar.svelte'
+  import StorePanel from '@/components/StorePanel.svelte'
   import VersionSwitcher from '@/components/VersionSwitcher.svelte'
   import { onMount } from 'svelte'
 
@@ -18,6 +19,11 @@
   let heading = $state(`Retrieving snapshot ${shortId}…`)
   let bannerHtml = $state(`Retrieving snapshot <code>${shortId}</code> from the backup…`)
   let versions = $state([])
+  let diffHref = $state(null)
+  let prevLabel = $state(null)
+  let store = $state(null)
+  let storeDiffHref = $state(null)
+  let storeDiffLabel = $state(null)
   let nav = $state([])
   let activeSlug = $state('')
   let articleHtml = $state('')
@@ -46,6 +52,12 @@
       heading = `Retrieving ${e.label} from backup`
       bannerHtml = `Viewing <strong>${e.label}</strong> as it existed on ${e.stamp} UTC. 🔒 Decrypted from the encrypted Plakar snapshot <code>${e.id}</code>, synced to Cloudflare R2, and restored live. The page, its images, PDFs, and stylesheet all come from the backup.`
       versions = e.versions
+      diffHref = e.diffHref
+      prevLabel = e.prevLabel
+    } else if (e.type === 'store') {
+      store = e.info
+      storeDiffHref = e.diffHref
+      storeDiffLabel = e.diffLabel
     } else if (e.type === 'content') {
       articleHtml = e.html
       theme = e.theme
@@ -97,6 +109,10 @@
 
     <p class="banner">{@html bannerHtml}</p>
 
+    {#if diffHref}
+      <a class="diff-cta" href={diffHref}>See what changed since {prevLabel} →</a>
+    {/if}
+
     <article class="card doc">
       {#if errorMsg}
         <p class="doc-loading">{errorMsg}</p>
@@ -139,5 +155,6 @@
       footer={done}
       note="Plakar decrypts the whole snapshot once, then serves each file from the machine's local cache. Revisits are instant."
     />
+    <StorePanel info={store} diffHref={storeDiffHref} diffLabel={storeDiffLabel} />
   </aside>
 </div>

@@ -1,0 +1,12 @@
+{
+  "version": "1.5.0",
+  "auth": ["bearer", "deploy-token"],
+  "endpoints": [
+    { "method": "GET", "path": "/status", "desc": "node health and last deploy" },
+    { "method": "GET", "path": "/manifest", "desc": "files currently served" },
+    { "method": "GET", "path": "/metrics", "desc": "Prometheus metrics" },
+    { "method": "GET", "path": "/audit", "desc": "signed deploy history" },
+    { "method": "POST", "path": "/run", "desc": "trigger a deploy" },
+    { "method": "POST", "path": "/plugins", "desc": "register a plugin" }
+  ]
+}

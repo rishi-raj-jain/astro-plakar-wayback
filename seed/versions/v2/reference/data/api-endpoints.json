@@ -1,0 +1,8 @@
+{
+  "version": "0.5.0",
+  "auth": "bearer",
+  "endpoints": [
+    { "method": "GET", "path": "/status", "desc": "node health and last deploy time" },
+    { "method": "GET", "path": "/manifest", "desc": "files currently served by the node" }
+  ]
+}

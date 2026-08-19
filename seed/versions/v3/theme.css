@@ -1,0 +1,61 @@
+/* Nimbus 1.0 docs theme — clean sans, indigo accent, left-ruled code blocks. */
+.doc {
+  --accent: #4f46e5;
+  font-family:
+    'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.7;
+  color: #1e1b2e;
+}
+.doc h1,
+.doc h2,
+.doc h3 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #312e81;
+}
+.doc h1 {
+  font-size: 1.9rem;
+}
+.doc h2 {
+  margin-top: 1.9em;
+  padding-left: 10px;
+  border-left: 4px solid #4f46e5;
+}
+.doc a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.doc a:hover {
+  text-decoration: underline;
+}
+.doc code {
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 4px;
+}
+.doc pre {
+  background: #f5f5ff;
+  border-left: 3px solid #4f46e5;
+  border-radius: 0 8px 8px 0;
+}
+.doc pre code {
+  background: none;
+  color: #1e1b2e;
+}
+.doc img {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px -12px rgba(79, 70, 229, 0.4);
+}
+.doc thead th {
+  background: #eef2ff;
+  color: #312e81;
+}
+.doc .embed-video {
+  box-shadow: 0 12px 32px -14px rgba(49, 46, 129, 0.5);
+}
+.doc blockquote {
+  border-left: 3px solid #4f46e5;
+  background: #eef2ff;
+  border-radius: 0 8px 8px 0;
+}

@@ -1,0 +1,115 @@
+---
+export const prerender = false
+
+import OpsPanel from '@/components/OpsPanel.svelte'
+import Shell from '@/layouts/Shell.astro'
+import { diffVersions, versionPairs } from '@/lib/diff'
+import { Ops } from '@/lib/ops'
+
+const fromKey = Astro.params.from!
+const toKey = Astro.params.to!
+
+const ops = new Ops()
+const result = diffVersions(fromKey, toKey, ops)
+const pairs = versionPairs() // served from the cache the diff just warmed
+
+const { from, to } = result
+const stamp = (v: { date: Date; live: boolean }) => (v.live ? 'current' : v.date.toISOString().replace('T', ' ').slice(0, 16) + ' UTC')
+
+const KIND_LABEL = { text: 'changed', binary: 'changed', added: 'added', removed: 'removed' } as const
+const counts = {
+  changed: result.changes.filter((c) => c.kind === 'text' || c.kind === 'binary').length,
+  added: result.changes.filter((c) => c.kind === 'added').length,
+  removed: result.changes.filter((c) => c.kind === 'removed').length,
+}
+const summaryBits = [counts.changed && `${counts.changed} changed`, counts.added && `${counts.added} added`, counts.removed && `${counts.removed} removed`].filter(Boolean)
+---
+
+<Shell title={`What changed: ${from.label} → ${to.label}`}>
+  <div class="docs-layout">
+    <nav class="sidebar" aria-label="Version timeline">
+      <p class="nav-section">Compare across history</p>
+      <ul class="diff-pairs">
+        {
+          pairs.map((p) => {
+            const active = p.from.key === from.key && p.to.key === to.key
+            return (
+              <li>
+                <a href={`/diff/${p.from.key}/${p.to.key}`} class="diff-pair" class:list={{ active }} aria-current={active ? 'page' : undefined}>
+                  {p.from.label} → {p.to.label}
+                </a>
+              </li>
+            )
+          })
+        }
+      </ul>
+    </nav>
+
+    <main class="doc-main">
+      <p class="banner">
+        Comparing <strong>{from.label}</strong> ({stamp(from)}) → <strong>{to.label}</strong> ({stamp(to)}). The diff is computed by <code>plakar diff</code> reading both encrypted snapshots
+        — watch the command in the panel on the right.
+      </p>
+
+      {
+        result.error ? (
+          <article class="card">
+            <p class="doc-loading">{result.error}</p>
+          </article>
+        ) : (
+          <>
+            <div class="diff-summary card">
+              {summaryBits.length ? (
+                <p>
+                  <strong>{summaryBits.join(' · ')}</strong>
+                  <span class="muted"> · {result.unchanged} files unchanged (carried over intact from the previous snapshot)</span>
+                </p>
+              ) : (
+                <p class="muted">No file-level differences between these two versions.</p>
+              )}
+            </div>
+
+            {result.changes.map((c) => (
+              <details class="diff-file card" open={c.kind === 'text'}>
+                <summary class="diff-file-head">
+                  <span class="chev" aria-hidden="true">
+                    ▸
+                  </span>
+                  <span class={`diff-badge diff-${c.kind}`}>{KIND_LABEL[c.kind]}</span>
+                  <span class="diff-path">{c.slug}</span>
+                </summary>
+                <div class="diff-file-body">
+                  {c.kind === 'text' && c.hunk ? (
+                    <pre class="diff-hunk">
+                      {c.hunk.split('\n').map((line) => (
+                        <span class:list={['diff-line', line.startsWith('+') ? 'add' : line.startsWith('-') ? 'del' : line.startsWith('@@') ? 'hunk' : '']}>{line || ' '}</span>
+                      ))}
+                    </pre>
+                  ) : c.kind === 'binary' ? (
+                    <p class="muted">Binary file — the bytes differ between versions (for example an image or PDF that was replaced).</p>
+                  ) : c.kind === 'added' ? (
+                    <p class="muted">
+                      New in {to.label}. It did not exist in {from.label}.
+                    </p>
+                  ) : (
+                    <p class="muted">
+                      Present in {from.label}, removed by {to.label}.
+                    </p>
+                  )}
+                </div>
+              </details>
+            ))}
+          </>
+        )
+      }
+    </main>
+
+    <aside class="doc-aside">
+      <OpsPanel
+        ops={ops.entries}
+        heading={`Diffing ${from.label} → ${to.label}`}
+        note="Both versions are read from the encrypted Plakar store. plakar diff decrypts and walks each snapshot's file tree to produce this unified diff."
+      />
+    </aside>
+  </div>
+</Shell>

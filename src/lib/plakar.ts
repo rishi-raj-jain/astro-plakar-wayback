@@ -66,11 +66,16 @@ let snapshotCache: Snapshot[] | null = null
 let snapshotCachedAt = 0
 const locateCache = new Map<string, { hits: LocateHit[]; at: number }>()
 
+let storeInfoCache: StoreInfo | null = null
+let storeInfoCachedAt = 0
+
 /** Drop the cached snapshot list and locate results (call after the store changes). */
 export function invalidatePlakarCache(): void {
   snapshotCache = null
   snapshotCachedAt = 0
   locateCache.clear()
+  storeInfoCache = null
+  storeInfoCachedAt = 0
 }
 
 function snapshotCacheFresh(): boolean {
@@ -214,4 +219,70 @@ export function readFileBuffer(snapshotId: string, absPath: string, ops?: Ops): 
   const command = `plakar at ${STORE_LABEL} cat ${short}:${absPath}`
   const doIt = () => plakarBuffer(['cat', `${snapshotId}:${absPath}`])
   return ops ? ops.run(command, doIt, (buf) => ({ detail: 'binary', bytes: buf.length })) : doIt()
+}
+
+// ---- store info (encryption, compression, dedup) ---------------------------
+
+export interface StoreInfo {
+  snapshots: number
+  /** Physical bytes on disk, after dedup + compression (the store's real footprint). */
+  storageBytes: number
+  /** Sum of the logical content across every snapshot (what N full copies would cost). */
+  logicalBytes: number
+  encryption: string
+  compression: string
+  chunking: string
+}
+
+/** Pull the parenthetical "(NNN bytes)" from a `plakar info` line, e.g. "16 MiB (16252546 bytes)". */
+function bytesOf(out: string, label: string): number {
+  const m = out.match(new RegExp(`${label}:.*?\\((\\d+) bytes\\)`))
+  return m ? Number(m[1]) : 0
+}
+
+function fieldOf(out: string, label: string): string {
+  const m = out.match(new RegExp(`${label}:\\s*(.+)`))
+  return m ? m[1].trim() : ''
+}
+
+/** The `- Algorithm:` line inside a named block (Chunking, Compression, …). */
+function blockAlgo(out: string, block: string): string {
+  const m = out.match(new RegExp(`${block}:\\s*\\n\\s*- Algorithm:\\s*(.+)`))
+  return m ? m[1].trim() : ''
+}
+
+const INFO_COMMAND = `plakar at ${STORE_LABEL} info`
+
+/**
+ * Read repository-wide stats straight from `plakar at <store> info`. Cached like
+ * the snapshot list (the `info` command runs the Argon2id KDF, ~2s), and
+ * invalidated by invalidatePlakarCache() when a backup changes the store.
+ */
+export function storeInfo(ops?: Ops): StoreInfo {
+  const parse = (out: string): StoreInfo => ({
+    snapshots: Number(fieldOf(out, 'Snapshots') || 0),
+    storageBytes: bytesOf(out, 'Storage size'),
+    logicalBytes: bytesOf(out, 'Logical size'),
+    encryption: fieldOf(out, 'DataAlgorithm') || 'AES256-GCM-SIV',
+    compression: blockAlgo(out, 'Compression') || 'LZ4',
+    chunking: blockAlgo(out, 'Chunking') || 'fastcdc',
+  })
+  if (storeInfoCache && Date.now() - storeInfoCachedAt < CACHE_TTL_MS) {
+    if (ops) ops.entries.push({ command: INFO_COMMAND, detail: `${storeInfoCache.snapshots} snapshots (cached)`, ms: 1, bytes: 0 })
+    return storeInfoCache
+  }
+  const doIt = () => parse(plakarText(['info']))
+  const result = ops ? ops.run(INFO_COMMAND, doIt, (i) => ({ detail: `${i.snapshots} snapshots` })) : doIt()
+  storeInfoCache = result
+  storeInfoCachedAt = Date.now()
+  return result
+}
+
+// ---- diff ------------------------------------------------------------------
+
+/** Raw `plakar diff -recursive A B` output (short ids are fine with -recursive). */
+export function diffRecursive(fromId: string, toId: string, ops?: Ops): string {
+  const command = `plakar at ${STORE_LABEL} diff -recursive ${fromId.slice(0, 8)} ${toId.slice(0, 8)}`
+  const doIt = () => plakarText(['diff', '-recursive', fromId, toId])
+  return ops ? ops.run(command, doIt, (out) => ({ detail: 'compared trees', bytes: Buffer.byteLength(out) })) : doIt()
 }

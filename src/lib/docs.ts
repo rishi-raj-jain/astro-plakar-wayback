@@ -254,19 +254,35 @@ export interface RenderResult {
   referenced: string[]
 }
 
-/** Render markdown to HTML, rewriting relative asset links to this version's copy. */
+/**
+ * Render markdown to HTML, rewriting every relative asset reference to this
+ * version's copy. Two passes:
+ *   1. Markdown image/link tokens (`![](./x.png)`, `[](./x.pdf)`).
+ *   2. Raw-HTML embeds in the doc body — `src`/`data`/`poster` on <iframe>,
+ *      <embed>, <object>, <video>, <img> — so an embedded PDF or image points at
+ *      /assets/<version>/… and archived versions embed their own copy. External
+ *      URLs (a YouTube <iframe>, absolute paths) are left untouched.
+ */
 export function renderDoc(version: Version, pageSlug: string, body: string, entries: Entries): RenderResult {
   const referenced = new Set<string>()
+  const rewrite = (ref: string): string | null => {
+    const slug = resolveRef(entries, pageSlug, ref)
+    if (!slug) return null
+    referenced.add(slug)
+    return `/assets/${version.key}/${slug}`
+  }
   const md = new Marked({
     walkTokens: (token) => {
       if ((token.type === 'image' || token.type === 'link') && token.href) {
-        const slug = resolveRef(entries, pageSlug, token.href)
-        if (slug) {
-          referenced.add(slug)
-          token.href = `/assets/${version.key}/${slug}`
-        }
+        const to = rewrite(token.href)
+        if (to) token.href = to
       }
     },
   })
-  return { html: md.parse(body) as string, referenced: [...referenced] }
+  let html = md.parse(body) as string
+  html = html.replace(/\b(src|data|poster|href)=(["'])([^"']+)\2/gi, (whole, attr, quote, ref) => {
+    const to = rewrite(ref)
+    return to ? `${attr}=${quote}${to}${quote}` : whole
+  })
+  return { html, referenced: [...referenced] }
 }

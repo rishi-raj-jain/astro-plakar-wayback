@@ -21,6 +21,11 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
+# Build the v1…v5 demo history into the Kloset store so the image ships with it
+# (seed/index.mjs snapshots seed/versions/v1…v4 and leaves v5 in src/docs). Uses
+# the default passphrase, matching the runtime default.
+RUN PLAKAR_PASSPHRASE=wayback-demo npm run seed
+
 # ─── runtime ───────────────────────────────────────────────────────────────
 FROM node:22-slim AS runtime
 WORKDIR /app
@@ -39,11 +44,18 @@ COPY --from=builder /usr/local/bin/plakar /usr/local/bin/plakar
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-# The built server, and the starting docs copied onto the volume on first boot.
+# The built server, the starting docs (v5), and the pre-built v1…v5 store — both
+# copied onto the volume on first boot.
 COPY --from=builder /build/dist ./dist
 COPY --from=builder /build/src/docs ./seed/docs
+COPY --from=builder /build/.plakar/store ./seed/store
 # The R2 fetch helper the entrypoint uses to bootstrap the store from R2.
 COPY --from=builder /build/r2-fetch.mjs ./r2-fetch.mjs
+
+# Bump SEED_VERSION to force the entrypoint to reinstall the baked history over
+# an existing volume on the next deploy (otherwise the volume persists as-is).
+ARG SEED_VERSION=1
+RUN echo "$SEED_VERSION" > ./seed/SEED_VERSION
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
